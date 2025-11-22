@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>3D Urban Ops - Battle Royale</title>
     <style>
         body {
@@ -13,9 +13,10 @@
             background-color: #1a1a2e;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
+            touch-action: none; /* 重要: スマホでのブラウザ操作を無効化 */
         }
 
+        /* --- UI要素 --- */
         .overlay {
             position: absolute;
             top: 0;
@@ -37,7 +38,7 @@
         }
 
         h1 {
-            font-size: 64px;
+            font-size: 48px;
             margin-bottom: 10px;
             text-shadow: 0 0 20px #00ffea;
             font-family: 'Courier New', Courier, monospace;
@@ -49,7 +50,7 @@
         .device-selector {
             display: flex;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             background: rgba(0,0,0,0.5);
             padding: 10px;
             border-radius: 30px;
@@ -57,8 +58,8 @@
         }
 
         .device-btn {
-            padding: 10px 30px;
-            font-size: 18px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
             background: transparent;
             color: #888;
@@ -76,7 +77,7 @@
 
         .mode-select {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             margin-top: 10px;
             flex-wrap: wrap;
             justify-content: center;
@@ -85,11 +86,11 @@
         .mode-card {
             background: rgba(0, 20, 40, 0.8);
             border: 2px solid #00ffea;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            width: 250px;
+            width: 200px;
             box-shadow: 0 0 10px rgba(0, 255, 234, 0.2);
         }
 
@@ -102,11 +103,12 @@
         .mode-card h2 {
             margin-top: 0;
             color: #00ffea;
+            font-size: 18px;
         }
 
         .mode-card p {
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 12px;
+            line-height: 1.4;
             color: #ccc;
         }
 
@@ -121,14 +123,11 @@
             text-transform: uppercase;
             font-weight: bold;
         }
-        button.action-btn:hover {
-            background: #00ffea;
-            color: #000;
-        }
 
+        /* ゲーム内HUD */
         #hud-container {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 20px;
             pointer-events: none;
             z-index: 40;
@@ -137,7 +136,7 @@
 
         .hud-text {
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             text-shadow: 2px 2px 0 #000;
             margin-bottom: 5px;
@@ -145,8 +144,8 @@
         }
         
         #hp-bar-container {
-            width: 300px;
-            height: 25px;
+            width: 200px;
+            height: 20px;
             background: #111;
             border: 2px solid #555;
             margin-top: 5px;
@@ -158,7 +157,6 @@
             height: 100%;
             background: #00ffea;
             transition: width 0.2s, background-color 0.2s;
-            box-shadow: 0 0 10px rgba(0, 255, 234, 0.5);
         }
         
         #hp-text {
@@ -168,13 +166,14 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            line-height: 25px;
+            line-height: 20px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             text-shadow: 1px 1px 0 #000;
         }
 
+        /* モバイル用コントロール */
         #mobile-controls {
             position: absolute;
             bottom: 0;
@@ -186,16 +185,17 @@
             display: none;
         }
 
+        /* ジョイスティック */
         #joystick-area {
             position: absolute;
-            bottom: 50px;
-            left: 50px;
-            width: 150px;
-            height: 150px;
+            bottom: 40px;
+            left: 40px;
+            width: 140px;
+            height: 140px;
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(0, 255, 234, 0.5);
+            border: 2px solid rgba(0, 255, 234, 0.3);
             border-radius: 50%;
-            pointer-events: auto;
+            pointer-events: auto; /* 操作可能 */
             touch-action: none;
         }
 
@@ -203,27 +203,29 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 255, 234, 0.8);
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 234, 0.6);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
         }
 
+        /* アクションボタン群 */
         .mob-btn {
             position: absolute;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
             border: 2px solid #00ffea;
             color: #00ffea;
             border-radius: 50%;
             font-weight: bold;
-            pointer-events: auto;
+            pointer-events: auto; /* 操作可能 */
             display: flex;
             justify-content: center;
             align-items: center;
             user-select: none;
             touch-action: none;
+            transition: background 0.1s;
         }
         .mob-btn:active {
             background: rgba(0, 255, 234, 0.5);
@@ -232,11 +234,11 @@
 
         #btn-fire {
             bottom: 80px;
-            right: 40px;
-            width: 80px;
-            height: 80px;
+            right: 30px;
+            width: 90px;
+            height: 90px;
             font-size: 18px;
-            background: rgba(255, 50, 50, 0.3);
+            background: rgba(255, 50, 50, 0.2);
             border-color: #ff4444;
             color: #ff4444;
         }
@@ -245,16 +247,16 @@
         #btn-jump {
             bottom: 30px;
             right: 140px;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             font-size: 14px;
         }
 
         #btn-aim {
-            bottom: 180px;
+            bottom: 190px;
             right: 40px;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             font-size: 14px;
         }
 
@@ -262,57 +264,48 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 50%;
+            width: 60%; /* 画面右半分強 */
             height: 100%;
             pointer-events: auto;
             z-index: 55;
         }
 
+        /* ミニマップ */
         #minimap-container {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 200px;
-            height: 200px;
-            border: 3px solid #00ffea;
-            background-color: rgba(200, 200, 200, 0.8);
+            top: 10px;
+            right: 10px;
+            width: 150px;
+            height: 150px;
+            border: 2px solid #00ffea;
+            background-color: rgba(30, 30, 40, 0.7);
             border-radius: 50%;
             overflow: hidden;
             z-index: 40;
             display: none;
-            box-shadow: 0 0 15px rgba(0, 255, 234, 0.3);
         }
 
         #minimap { width: 100%; height: 100%; }
 
-        #damage-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 50%, rgba(255, 0, 0, 0.6) 100%);
-            pointer-events: none; z-index: 35; opacity: 0; transition: opacity 0.1s;
+        /* エフェクト */
+        #damage-overlay, #zone-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 35; display: none;
         }
-        #zone-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 255, 0.2);
-            pointer-events: none; z-index: 34; display: none;
-        }
+        #damage-overlay { background: radial-gradient(circle, transparent 50%, rgba(255, 0, 0, 0.6) 100%); }
+        #zone-overlay { background: rgba(0, 0, 255, 0.2); }
+        
         .damage-number {
             position: absolute;
             color: #ffff00; font-size: 24px; font-weight: bold; font-family: 'Arial Black', sans-serif;
             text-shadow: 2px 2px 0 #000; pointer-events: none; z-index: 45;
         }
+        
         #crosshair {
             position: absolute; top: 50%; left: 50%; width: 4px; height: 4px;
             background-color: #00ffea; border-radius: 50%; transform: translate(-50%, -50%);
             pointer-events: none; z-index: 20; box-shadow: 0 0 6px #00ffea;
         }
-        #crosshair::before, #crosshair::after {
-            content: ''; position: absolute; background-color: rgba(0, 255, 234, 0.8);
-        }
-        #crosshair::before { top: -10px; left: 1px; width: 2px; height: 22px; }
-        #crosshair::after { top: 1px; left: -10px; width: 22px; height: 2px; }
-
+        
         #scope-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15;
             background: radial-gradient(circle, transparent 25%, black 26%, black 100%); display: none; opacity: 0.9;
@@ -333,14 +326,14 @@
         
         #message-area {
             position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-            font-size: 32px; font-weight: bold; color: #fff;
+            font-size: 24px; font-weight: bold; color: #fff;
             text-shadow: 0 0 10px #00ffea; pointer-events: none; z-index: 45;
             opacity: 0; transition: opacity 0.5s; width: 100%; text-align: center;
         }
         
         #glider-info {
-            position: absolute; top: 100px; width: 100%; text-align: center;
-            color: #00ffea; font-size: 20px; font-weight: bold;
+            position: absolute; top: 80px; width: 100%; text-align: center;
+            color: #00ffea; font-size: 16px; font-weight: bold;
             text-shadow: 0 0 5px black; display: none; pointer-events: none; z-index: 40;
         }
     </style>
@@ -360,11 +353,11 @@
         <div class="mode-select">
             <div class="mode-card" onclick="startGame('practice')">
                 <h2>PRACTICE</h2>
-                <p>練習モード<br>敵: 5人 (無限)<br>敵が赤く発光<br>安全地帯なし</p>
+                <p>練習モード<br>敵: 5人 (無限)<br>敵が赤く発光</p>
             </div>
             <div class="mode-card" onclick="startGame('battleroyale')">
                 <h2>BATTLE ROYALE</h2>
-                <p>本番モード<br>グライダー降下<br>迫る安全地帯<br>敵AI強化版</p>
+                <p>本番モード<br>グライダー降下<br>迫る安全地帯</p>
             </div>
         </div>
     </div>
@@ -380,7 +373,7 @@
     <div id="hud-container">
         <div class="hud-text">ENEMIES: <span id="score-display">0</span></div>
         <div class="hud-text" id="zone-timer">ZONE SHRINKING</div>
-        <div class="hud-text" style="font-size: 18px; margin-top: 10px;">ARMOR:</div>
+        <div class="hud-text" style="font-size: 14px; margin-top: 5px;">ARMOR:</div>
         <div id="hp-bar-container">
             <div id="hp-bar"></div>
             <div id="hp-text">100 / 100</div>
@@ -390,18 +383,21 @@
     <div id="glider-info">GLIDING ENGAGED - LANDING ON BUILDINGS PROHIBITED</div>
 
     <div id="minimap-container">
-        <canvas id="minimap" width="200" height="200"></canvas>
+        <canvas id="minimap" width="150" height="150"></canvas>
     </div>
     
     <!-- モバイル用コントロール -->
     <div id="mobile-controls">
+        <!-- 視点移動エリア -->
         <div id="camera-touch-zone"></div>
+        <!-- 左スティック -->
         <div id="joystick-area">
             <div id="joystick-knob"></div>
         </div>
-        <button id="btn-fire" class="mob-btn">FIRE</button>
-        <button id="btn-aim" class="mob-btn">AIM</button>
-        <button id="btn-jump" class="mob-btn">JUMP</button>
+        <!-- 右ボタン群 -->
+        <div id="btn-fire" class="mob-btn">FIRE</div>
+        <div id="btn-aim" class="mob-btn">AIM</div>
+        <div id="btn-jump" class="mob-btn">JUMP</div>
     </div>
 
     <div id="message-area"></div>
@@ -417,18 +413,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // --- グローバル変数宣言 ---
-        // 入力状態をオブジェクトで管理
+        // --- グローバル変数 ---
+        // 入力
         const input = {
-            forward: false,
-            backward: false,
-            left: false,
-            right: false,
-            jump: false,
-            sprint: false,
-            zoom: false,
-            analogX: 0,
-            analogZ: 0
+            forward: false, backward: false, left: false, right: false,
+            jump: false, sprint: false, zoom: false,
+            analogX: 0, analogZ: 0,
+            canJump: false // 接地判定用
         };
 
         // ゲーム状態
@@ -445,13 +436,13 @@
             lastZoneEnemyDamageTime: 0
         };
 
-        // Three.js関連
+        // Three.js
         let camera, scene, renderer;
         let gunGroup, borderCylinder;
         let minimapCtx;
         let raycaster;
 
-        // エンティティ管理
+        // エンティティ
         let bullets = [];
         let enemies = []; 
         let buildings = [];
@@ -461,11 +452,13 @@
         // 物理
         let prevTime = performance.now();
         const velocity = new THREE.Vector3();
-        const direction = new THREE.Vector3();
         const playerHeight = 8;
         
-        // モバイル操作用変数
-        const joystick = { active: false, startX: 0, startY: 0, currentX: 0, currentY: 0, id: null, centerX: 0, centerY: 0 };
+        // UIキャッシュ
+        let ui = {};
+
+        // モバイル用内部変数
+        const joystick = { active: false, startX: 0, startY: 0, id: null, centerX: 0, centerY: 0 };
         let cameraTouchId = null;
         let lastCameraTouchX = 0;
         let lastCameraTouchY = 0;
@@ -484,16 +477,15 @@
             ZONE_MIN_RADIUS: 50,
             ZONE_SHRINK_SPEED: 10, 
             ZONE_DAMAGE: 2,
+            // PCダッシュ(400)と同じ最高速度
+            MAX_SPEED: 400 
         };
-
-        // UI要素キャッシュ
-        let ui = {};
 
         init();
         animate();
 
         function init() {
-            // UI要素の取得
+            // UI要素取得
             ui = {
                 title: document.getElementById('title-screen'),
                 result: document.getElementById('result-screen'),
@@ -516,7 +508,13 @@
                 scopeOverlay: document.getElementById('scope-overlay'),
                 scopeLines: document.getElementById('scope-lines'),
                 crosshair: document.getElementById('crosshair'),
-                damageOverlay: document.getElementById('damage-overlay')
+                damageOverlay: document.getElementById('damage-overlay'),
+                joyArea: document.getElementById('joystick-area'),
+                joyKnob: document.getElementById('joystick-knob'),
+                camZone: document.getElementById('camera-touch-zone'),
+                btnFire: document.getElementById('btn-fire'),
+                btnJump: document.getElementById('btn-jump'),
+                btnAim: document.getElementById('btn-aim')
             };
 
             scene = new THREE.Scene();
@@ -549,7 +547,7 @@
             pointLight.position.set(0, 50, 0);
             scene.add(pointLight);
 
-            // イベントリスナー
+            // PC Input
             document.addEventListener('keydown', onKeyDown);
             document.addEventListener('keyup', onKeyUp);
             document.addEventListener('mousemove', onMouseMove);
@@ -557,6 +555,7 @@
             document.addEventListener('mouseup', onMouseUp);
             document.addEventListener('contextmenu', e => e.preventDefault());
             
+            // Mobile Input
             initMobileControls();
 
             window.addEventListener('resize', onWindowResize);
@@ -578,14 +577,11 @@
             document.body.appendChild(renderer.domElement);
         }
 
-        // --- デバイス選択 ---
         window.selectDevice = function(type) {
             state.deviceType = type;
             ui.btnDevPC.classList.toggle('active', type === 'PC');
             ui.btnDevMob.classList.toggle('active', type === 'MOBILE');
         };
-
-        // --- ゲームロジック ---
 
         window.startGame = function(mode) {
             state.mode = mode;
@@ -604,6 +600,7 @@
             camera.rotation.set(0, 0, 0);
             input.analogX = 0;
             input.analogZ = 0;
+            input.zoom = false;
 
             ui.title.classList.add('hidden');
             ui.result.classList.add('hidden');
@@ -682,32 +679,25 @@
             ui.result.classList.remove('hidden');
         }
 
-        // --- モバイル操作 ---
         function initMobileControls() {
-            const joyArea = document.getElementById('joystick-area');
-            const joyKnob = document.getElementById('joystick-knob');
-            const camZone = document.getElementById('camera-touch-zone');
-            const btnFire = document.getElementById('btn-fire');
-            const btnJump = document.getElementById('btn-jump');
-            const btnAim = document.getElementById('btn-aim');
-            
-            joyArea.addEventListener('touchstart', (e) => {
+            // ジョイスティック
+            ui.joyArea.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 const touch = e.changedTouches[0];
                 joystick.active = true;
                 joystick.id = touch.identifier;
-                const rect = joyArea.getBoundingClientRect();
+                const rect = ui.joyArea.getBoundingClientRect();
                 joystick.centerX = rect.left + rect.width / 2;
                 joystick.centerY = rect.top + rect.height / 2;
-                updateJoystick(touch.clientX, touch.clientY, joyKnob);
+                updateJoystick(touch.clientX, touch.clientY);
             }, {passive: false});
 
-            joyArea.addEventListener('touchmove', (e) => {
+            ui.joyArea.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 if (!joystick.active) return;
                 for (let i = 0; i < e.changedTouches.length; i++) {
                     if (e.changedTouches[i].identifier === joystick.id) {
-                        updateJoystick(e.changedTouches[i].clientX, e.changedTouches[i].clientY, joyKnob);
+                        updateJoystick(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
                         break;
                     }
                 }
@@ -720,15 +710,16 @@
                         joystick.active = false;
                         input.analogX = 0;
                         input.analogZ = 0;
-                        joyKnob.style.transform = `translate(-50%, -50%)`;
+                        ui.joyKnob.style.transform = `translate(-50%, -50%)`;
                         break;
                     }
                 }
             };
-            joyArea.addEventListener('touchend', endJoystick);
-            joyArea.addEventListener('touchcancel', endJoystick);
+            ui.joyArea.addEventListener('touchend', endJoystick, {passive: false});
+            ui.joyArea.addEventListener('touchcancel', endJoystick, {passive: false});
 
-            camZone.addEventListener('touchstart', (e) => {
+            // カメラ
+            ui.camZone.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 const touch = e.changedTouches[0];
                 cameraTouchId = touch.identifier;
@@ -736,7 +727,7 @@
                 lastCameraTouchY = touch.clientY;
             }, {passive: false});
 
-            camZone.addEventListener('touchmove', (e) => {
+            ui.camZone.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 for (let i = 0; i < e.changedTouches.length; i++) {
                     if (e.changedTouches[i].identifier === cameraTouchId) {
@@ -756,23 +747,27 @@
                 }
             }, {passive: false});
 
-            btnFire.addEventListener('touchstart', (e) => {
+            // ボタン ({passive: false} で確実に反応させる)
+            ui.btnFire.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 shoot(null, true);
-            });
+            }, {passive: false});
             
-            btnJump.addEventListener('touchstart', (e) => {
+            ui.btnJump.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (input.canJump) { velocity.y += 250; input.canJump = false; }
-            });
+                if (input.canJump) { 
+                    velocity.y += 250; 
+                    input.canJump = false; 
+                }
+            }, {passive: false});
 
-            btnAim.addEventListener('touchstart', (e) => {
+            ui.btnAim.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 setZoom(!input.zoom);
-            });
+            }, {passive: false});
         }
 
-        function updateJoystick(clientX, clientY, knob) {
+        function updateJoystick(clientX, clientY) {
             const maxDist = 35;
             let dx = clientX - joystick.centerX;
             let dy = clientY - joystick.centerY;
@@ -783,329 +778,14 @@
                 dy = (dy / dist) * maxDist;
             }
             
-            knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+            ui.joyKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
             
+            // 値を -1 ~ 1 に正規化
             input.analogX = dx / maxDist;
-            input.analogZ = -(dy / maxDist); 
+            input.analogZ = -(dy / maxDist); // 上がプラス(前進)
         }
 
-        // --- Helper Functions ---
-
-        function createBorder() {
-            const geo = new THREE.CylinderGeometry(1, 1, 500, 32, 1, true);
-            const mat = new THREE.MeshBasicMaterial({ 
-                color: 0x0044ff, 
-                transparent: true, 
-                opacity: 0.2, 
-                side: THREE.DoubleSide,
-                depthWrite: false
-            });
-            borderCylinder = new THREE.Mesh(geo, mat);
-            borderCylinder.position.y = 250;
-            borderCylinder.visible = false;
-            scene.add(borderCylinder);
-        }
-
-        function updateZone(delta, time) {
-            if (state.mode !== 'battleroyale' || !borderCylinder) return;
-
-            if (state.zoneRadius > CONFIG.ZONE_MIN_RADIUS) {
-                state.zoneRadius -= CONFIG.ZONE_SHRINK_SPEED * delta;
-                borderCylinder.scale.set(state.zoneRadius, 1, state.zoneRadius);
-            }
-
-            const dist = Math.sqrt(camera.position.x**2 + camera.position.z**2);
-            if (dist > state.zoneRadius) {
-                ui.zoneOverlay.style.display = 'block';
-                if (time - state.lastZoneDamageTime > 1000) {
-                    takePlayerDamage(CONFIG.ZONE_DAMAGE);
-                    state.lastZoneDamageTime = time;
-                }
-            } else {
-                ui.zoneOverlay.style.display = 'none';
-            }
-            
-            if (time - state.lastZoneEnemyDamageTime > 1000) {
-                for (let i = enemies.length - 1; i >= 0; i--) {
-                    const e = enemies[i];
-                    const eDist = Math.sqrt(e.mesh.position.x**2 + e.mesh.position.z**2);
-                    if (eDist > state.zoneRadius) {
-                        e.hp -= CONFIG.ZONE_DAMAGE;
-                        showDamagePopup(e.mesh.position, CONFIG.ZONE_DAMAGE);
-                        if (e.hp <= 0) killEnemy(i);
-                    }
-                }
-                state.lastZoneEnemyDamageTime = time;
-            }
-        }
-
-        function getGroundHeightAt(x, z) {
-            let height = 0; 
-            for (const b of buildings) {
-                if (x > b.x - b.w/2 && x < b.x + b.w/2 &&
-                    z > b.z - b.d/2 && z < b.z + b.d/2) {
-                    if (b.h > height) height = b.h;
-                }
-            }
-            return height + playerHeight; 
-        }
-
-        function checkCollision(x, z, margin = 2, currentY = -1000) {
-            for (const b of buildings) {
-                const feetY = currentY - playerHeight;
-                if (feetY < b.h - 1) { 
-                    if (x > b.x - b.w/2 - margin && x < b.x + b.w/2 + margin &&
-                        z > b.z - b.d/2 - margin && z < b.z + b.d/2 + margin) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function checkGliderRestricted(x, z) {
-            for (const b of buildings) {
-                if (x > b.x - b.w/2 - 5 && x < b.x + b.w/2 + 5 &&
-                    z > b.z - b.d/2 - 5 && z < b.z + b.d/2 + 5) {
-                    return true; 
-                }
-            }
-            return false;
-        }
-
-        function setZoom(v) { 
-            input.zoom = v; 
-            ui.scopeOverlay.style.display = v ? 'block' : 'none'; 
-            ui.scopeLines.style.display = v ? 'block' : 'none'; 
-            ui.crosshair.style.opacity = v ? 0 : 1; 
-            if (gunGroup) gunGroup.visible = !v; 
-        }
-
-        // --- AI ---
-        function updateAI(delta, time) {
-            enemies.forEach(enemy => {
-                const distMoved = enemy.mesh.position.distanceTo(enemy.lastPos || enemy.mesh.position);
-                enemy.lastPos = enemy.mesh.position.clone();
-                
-                if (enemy.state === 'MOVING' && distMoved < 0.2) {
-                    enemy.stuckCounter = (enemy.stuckCounter || 0) + 1;
-                } else {
-                    enemy.stuckCounter = Math.max(0, (enemy.stuckCounter || 0) - 1);
-                }
-
-                if (enemy.stuckCounter > 60) {
-                    enemy.isUnsticking = true;
-                    enemy.unstickDir = new THREE.Vector3(Math.random()-0.5, 0, Math.random()-0.5).normalize();
-                    enemy.stuckCounter = 0;
-                    enemy.unstickTimer = 90;
-                }
-
-                if (enemy.isUnsticking) {
-                    enemy.unstickTimer--;
-                    if (enemy.unstickTimer <= 0) enemy.isUnsticking = false;
-                    enemy.mesh.lookAt(enemy.mesh.position.clone().add(enemy.unstickDir));
-                    const newPos = enemy.mesh.position.clone().add(enemy.unstickDir.clone().multiplyScalar(30 * delta));
-                    if (!checkCollision(newPos.x, newPos.z, 3, 0)) {
-                        enemy.mesh.position.copy(newPos);
-                    }
-                    return;
-                }
-
-                let minDist = Infinity;
-                let target = null;
-                let targetPos = null;
-
-                const distToPlayer = enemy.mesh.position.distanceTo(camera.position);
-                if (distToPlayer < 400) {
-                    minDist = distToPlayer;
-                    target = 'player';
-                    targetPos = camera.position;
-                }
-
-                if (state.mode === 'battleroyale') {
-                    enemies.forEach(other => {
-                        if (other === enemy) return;
-                        const d = enemy.mesh.position.distanceTo(other.mesh.position);
-                        if (d < minDist && d < 400) {
-                            minDist = d;
-                            target = other;
-                            targetPos = other.mesh.position;
-                        }
-                    });
-                }
-
-                const distFromCenter = Math.sqrt(enemy.mesh.position.x**2 + enemy.mesh.position.z**2);
-                if (state.mode === 'battleroyale' && distFromCenter > state.zoneRadius * 0.9) {
-                    targetPos = new THREE.Vector3(0, 0, 0);
-                    target = null; 
-                }
-
-                enemy.targetEntity = target;
-
-                if (targetPos) {
-                    enemy.state = 'MOVING';
-                    const startPos = enemy.mesh.position.clone().add(new THREE.Vector3(0, 3, 0));
-                    const dirToTarget = new THREE.Vector3().subVectors(targetPos, enemy.mesh.position).normalize();
-                    const distToTarget = enemy.mesh.position.distanceTo(targetPos);
-
-                    raycaster.set(startPos, dirToTarget);
-                    const intersects = raycaster.intersectObjects(buildingMeshes);
-                    let hasLineOfSight = true;
-                    if (intersects.length > 0 && intersects[0].distance < distToTarget) {
-                        hasLineOfSight = false;
-                    }
-
-                    let moveDir = dirToTarget.clone();
-                    moveDir.y = 0;
-                    moveDir.normalize();
-
-                    const avoidRayOrigin = enemy.mesh.position.clone().add(new THREE.Vector3(0, 2, 0));
-                    raycaster.set(avoidRayOrigin, moveDir);
-                    const avoidIntersects = raycaster.intersectObjects(buildingMeshes);
-                    
-                    if (avoidIntersects.length > 0 && avoidIntersects[0].distance < 12) {
-                        if (avoidIntersects[0].face) {
-                            const normal = avoidIntersects[0].face.normal.clone();
-                            const dot = moveDir.dot(normal);
-                            moveDir.sub(normal.multiplyScalar(dot)).normalize();
-                            moveDir.add(normal.multiplyScalar(0.5)).normalize();
-                        }
-                    }
-
-                    enemy.mesh.lookAt(enemy.mesh.position.x + moveDir.x, enemy.mesh.position.y, enemy.mesh.position.z + moveDir.z);
-                    
-                    const shouldMove = !target || (!hasLineOfSight || distToTarget > 80);
-
-                    if (shouldMove) {
-                         const newPos = enemy.mesh.position.clone().add(moveDir.multiplyScalar(30 * delta));
-                         if (!checkCollision(newPos.x, newPos.z, 3, 0)) {
-                            enemy.mesh.position.copy(newPos);
-                        }
-                    } else {
-                        enemy.state = 'ATTACKING';
-                    }
-
-                    if (hasLineOfSight && target) {
-                        enemy.mesh.lookAt(targetPos.x, enemy.mesh.position.y, targetPos.z);
-                        if (time - enemy.lastShot > 1500 + Math.random() * 1000) {
-                            shoot(enemy, false);
-                            enemy.lastShot = time;
-                        }
-                    }
-
-                } else {
-                    enemy.state = 'IDLE';
-                    if (time > enemy.nextMoveTime) {
-                        const r = 50;
-                        enemy.targetPos.set(
-                            enemy.mesh.position.x + (Math.random()-0.5)*r,
-                            0,
-                            enemy.mesh.position.z + (Math.random()-0.5)*r
-                        );
-                        enemy.nextMoveTime = time + 3000 + Math.random() * 2000;
-                    }
-                    const d = enemy.mesh.position.distanceTo(enemy.targetPos);
-                    if (d > 1) {
-                        const dir = new THREE.Vector3().subVectors(enemy.targetPos, enemy.mesh.position).normalize();
-                        enemy.mesh.lookAt(enemy.targetPos.x, enemy.mesh.position.y, enemy.targetPos.z);
-                        const newPos = enemy.mesh.position.clone().add(dir.multiplyScalar(10 * delta));
-                        if (!checkCollision(newPos.x, newPos.z, 3, 0)) {
-                            enemy.mesh.position.copy(newPos);
-                        }
-                        enemy.state = 'MOVING';
-                    }
-                }
-            });
-        }
-
-        // --- 物理・アクション ---
-
-        function shoot(shooter, isPlayer) {
-            const time = performance.now();
-            if (isPlayer && time - state.lastShootTime < 100) return; 
-            if (isPlayer) state.lastShootTime = time;
-
-            const size = isPlayer ? 0.3 : 0.6; 
-            const color = isPlayer ? 0x00ffea : 0xff0000;
-            const bulletGeo = new THREE.SphereGeometry(size, 8, 8);
-            const bulletMat = new THREE.MeshBasicMaterial({ color: color });
-            const bullet = new THREE.Mesh(bulletGeo, bulletMat);
-            
-            const startPos = new THREE.Vector3();
-            const dir = new THREE.Vector3();
-
-            if (isPlayer) {
-                startPos.copy(camera.position);
-                dir.set(0, 0, -1).applyQuaternion(camera.quaternion);
-                const spread = input.zoom ? 0.0 : 0.01;
-                dir.x += (Math.random() - 0.5) * spread;
-                dir.y += (Math.random() - 0.5) * spread;
-                dir.normalize();
-                startPos.add(dir.clone().multiplyScalar(1));
-                if (!input.zoom) {
-                    camera.rotation.x += 0.005;
-                    gunGroup.position.z += 0.1;
-                }
-            } else {
-                startPos.copy(shooter.mesh.position).add(new THREE.Vector3(0, 5, 0));
-                const targetPos = shooter.targetEntity === 'player' ? camera.position.clone().sub(new THREE.Vector3(0, 2, 0)) : shooter.targetEntity.mesh.position.clone();
-                dir.subVectors(targetPos, startPos).normalize();
-                dir.x += (Math.random() - 0.5) * 0.05;
-                dir.y += (Math.random() - 0.5) * 0.05;
-                dir.z += (Math.random() - 0.5) * 0.05;
-                dir.normalize();
-            }
-
-            bullet.position.copy(startPos);
-            scene.add(bullet);
-            bullets.push({
-                mesh: bullet,
-                velocity: dir.multiplyScalar(isPlayer ? 800 : 600), 
-                life: 3.0,
-                owner: isPlayer ? 'player' : shooter.id
-            });
-        }
-
-        function handleBulletCollisions() {
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const b = bullets[i];
-                let hit = false;
-
-                for (let j = enemies.length - 1; j >= 0; j--) {
-                    const enemy = enemies[j];
-                    if (b.owner === enemy.id) continue;
-
-                    if (b.mesh.position.distanceTo(enemy.mesh.position.clone().add(new THREE.Vector3(0,3,0))) < 6) {
-                        hit = true;
-                        if (b.owner === 'player') {
-                            showDamagePopup(enemy.mesh.position, CONFIG.BULLET_DAMAGE);
-                            enemy.hp -= CONFIG.BULLET_DAMAGE;
-                        } else {
-                            enemy.hp -= CONFIG.BULLET_DAMAGE;
-                        }
-                        if (enemy.hp <= 0) killEnemy(j);
-                        break;
-                    }
-                }
-
-                if (!hit && b.owner !== 'player') {
-                    if (b.mesh.position.distanceTo(camera.position) < 4) {
-                        hit = true;
-                        takePlayerDamage(10);
-                    }
-                }
-
-                if (!hit && checkCollision(b.mesh.position.x, b.mesh.position.z, 0, b.mesh.position.y + playerHeight)) {
-                    hit = true;
-                }
-
-                if (hit) {
-                    scene.remove(b.mesh);
-                    bullets.splice(i, 1);
-                }
-            }
-        }
-
+        // --- 物理・レンダリングループ ---
         function animate() {
             requestAnimationFrame(animate);
             const time = performance.now();
@@ -1128,33 +808,33 @@
             updateDamagePopups(delta);
             drawMinimap();
 
-            // --- プレイヤー移動 ---
             const groundHeight = getGroundHeightAt(camera.position.x, camera.position.z);
 
             if (state.isGliding) {
+                // グライダー移動
                 velocity.x -= velocity.x * 1.0 * delta;
                 velocity.z -= velocity.z * 1.0 * delta;
                 velocity.y = -3000 * delta; 
 
-                const speed = 800;
+                const speed = 800; // グライダーは速いまま
                 
-                let xInput = input.analogX;
-                let zInput = input.analogZ;
+                let xInput = 0, zInput = 0;
                 
-                let kbZ = Number(input.forward) - Number(input.backward);
-                let kbX = Number(input.right) - Number(input.left);
-                
-                if (kbZ !== 0 || kbX !== 0) {
-                    zInput = kbZ;
-                    xInput = kbX;
+                // 入力統合
+                if (state.deviceType === 'PC') {
+                    zInput = Number(input.forward) - Number(input.backward);
+                    xInput = Number(input.right) - Number(input.left);
+                } else {
+                    zInput = input.analogZ;
+                    xInput = input.analogX;
                 }
 
+                // 正規化(PC用)
                 const len = Math.sqrt(xInput*xInput + zInput*zInput);
                 if (len > 1) { xInput/=len; zInput/=len; }
 
                 const camY = camera.rotation.y;
-                let moveX = 0;
-                let moveZ = 0;
+                let moveX = 0, moveZ = 0;
                 
                 if (Math.abs(zInput) > 0.1) {
                     moveX += -Math.sin(camY) * zInput * speed * delta;
@@ -1165,12 +845,8 @@
                     moveZ += -Math.sin(camY) * xInput * speed * delta;
                 }
 
-                if (!checkGliderRestricted(camera.position.x + moveX, camera.position.z)) {
-                    camera.position.x += moveX;
-                }
-                if (!checkGliderRestricted(camera.position.x, camera.position.z + moveZ)) {
-                    camera.position.z += moveZ;
-                }
+                if (!checkGliderRestricted(camera.position.x + moveX, camera.position.z)) camera.position.x += moveX;
+                if (!checkGliderRestricted(camera.position.x, camera.position.z + moveZ)) camera.position.z += moveZ;
 
                 camera.position.y += velocity.y * delta;
 
@@ -1182,37 +858,58 @@
                     ui.glider.style.display = 'none';
                 }
             } else {
+                // 通常移動
                 velocity.x -= velocity.x * 8.0 * delta;
                 velocity.z -= velocity.z * 8.0 * delta;
                 velocity.y -= 800 * delta; 
 
-                let xInput = input.analogX;
-                let zInput = input.analogZ;
-                
-                let kbZ = Number(input.forward) - Number(input.backward);
-                let kbX = Number(input.right) - Number(input.left);
-                
-                if (kbZ !== 0 || kbX !== 0) {
-                    zInput = kbZ;
-                    xInput = kbX;
+                let xInput = 0, zInput = 0;
+                let currentSpeed = CONFIG.MAX_SPEED; // 基本はダッシュ速度
+
+                if (state.deviceType === 'PC') {
+                    zInput = Number(input.forward) - Number(input.backward);
+                    xInput = Number(input.right) - Number(input.left);
+                    // PCはShiftでダッシュ切り替え
+                    currentSpeed = input.sprint ? 400 : 200;
+                } else {
+                    // スマホはアナログ値を使う
+                    zInput = input.analogZ;
+                    xInput = input.analogX;
+                    // アナログ入力の強さ(0~1)を速度に反映させる
+                    // スティックを倒しきれば400、半分なら200になる
+                    const magnitude = Math.sqrt(xInput*xInput + zInput*zInput);
+                    // 入力があれば速度係数として使う
+                    // magnitudeが1を超えないようにクランプ
+                    const factor = Math.min(magnitude, 1.0);
+                    currentSpeed = CONFIG.MAX_SPEED * factor; 
                 }
-                
+
                 if (Math.abs(xInput) < 0.1) xInput = 0;
                 if (Math.abs(zInput) < 0.1) zInput = 0;
 
-                const speed = (input.sprint ? 400 : 200);
-                
                 const camY = camera.rotation.y;
-                let dx = 0;
-                let dz = 0;
+                let dx = 0, dz = 0;
                 
-                if (zInput !== 0) {
-                    dx += -Math.sin(camY) * zInput * speed * delta;
-                    dz += -Math.cos(camY) * zInput * speed * delta;
-                }
-                if (xInput !== 0) {
-                    dx += Math.cos(camY) * xInput * speed * delta;
-                    dz += -Math.sin(camY) * xInput * speed * delta;
+                // アナログ値自体に強さが含まれているので、方向ベクトル化してからcurrentSpeedを掛けるのではなく
+                // 入力値をそのまま成分として使う（ただし正規化が必要か？）
+                // -> シンプルに： xInput, zInput は方向と強さを持つ。
+                // これをカメラ回転に合わせて変換する。
+                
+                if (state.deviceType === 'MOBILE') {
+                    // スマホ: input値自体が -1~1 なので、これにMAX_SPEEDを掛けるだけで可変速度になる
+                    const moveSpeed = CONFIG.MAX_SPEED; 
+                    dx += (-Math.sin(camY) * zInput + Math.cos(camY) * xInput) * moveSpeed * delta;
+                    dz += (-Math.cos(camY) * zInput - Math.sin(camY) * xInput) * moveSpeed * delta;
+                } else {
+                    // PC: 0/1入力なので方向を決めて速度を掛ける
+                    if (zInput !== 0) {
+                        dx += -Math.sin(camY) * zInput * currentSpeed * delta;
+                        dz += -Math.cos(camY) * zInput * currentSpeed * delta;
+                    }
+                    if (xInput !== 0) {
+                        dx += Math.cos(camY) * xInput * currentSpeed * delta;
+                        dz += -Math.sin(camY) * xInput * currentSpeed * delta;
+                    }
                 }
 
                 if (!checkCollision(camera.position.x + dx, camera.position.z, 3, camera.position.y)) camera.position.x += dx;
@@ -1238,152 +935,12 @@
             renderer.render(scene, camera);
         }
 
-        function createSoldierModel() {
-            const group = new THREE.Group();
-            const isPractice = (state.mode === 'practice');
-            const bodyColor = isPractice ? 0xff0000 : 0xff4444;
-            const mat = new THREE.MeshStandardMaterial({ 
-                color: bodyColor, roughness: 0.5, metalness: 0.5,
-                emissive: isPractice ? 0xff0000 : 0x000000, emissiveIntensity: isPractice ? 0.8 : 0
-            });
-            const skin = new THREE.MeshStandardMaterial({ color: 0xffccaa });
-            
-            group.add(new THREE.Mesh(new THREE.BoxGeometry(4, 6, 2), mat));
-            group.children[0].position.y = 3;
-            group.add(new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.5, 2.5), skin));
-            group.children[1].position.y = 7.5;
-            
-            const gun = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 5), new THREE.MeshStandardMaterial({color:0x111}));
-            gun.position.set(2, 4, 2);
-            group.add(gun);
-
-            group.castShadow = true;
-            group.userData = { isEnemy: true, radius: 4 };
-            return group;
-        }
-
-        function spawnEnemy() {
-            const mesh = createSoldierModel();
-            let attempts = 0;
-            while(attempts < 20) {
-                const r = 100 + Math.random() * 400;
-                const theta = Math.random() * Math.PI * 2;
-                const x = Math.sin(theta) * r;
-                const z = Math.cos(theta) * r;
-                if (!checkCollision(x, z, 5, 0)) {
-                    mesh.position.set(x, 0, z);
-                    break;
-                }
-                attempts++;
-            }
-            scene.add(mesh);
-            enemies.push({
-                id: Math.random().toString(36).substr(2, 9),
-                mesh: mesh,
-                hp: CONFIG.ENEMY_HP,
-                state: 'IDLE',
-                lastShot: 0,
-                nextMoveTime: 0,
-                targetPos: new THREE.Vector3(),
-                targetEntity: null
-            });
-        }
-
-        function killEnemy(index) {
-            const enemy = enemies[index];
-            scene.remove(enemy.mesh);
-            enemies.splice(index, 1);
-            state.enemiesAlive--;
-            updateScoreUI();
-            if (state.mode === 'practice') {
-                setTimeout(() => { if(state.isActive && state.mode==='practice') { spawnEnemy(); state.enemiesAlive++; updateScoreUI(); } }, CONFIG.RESPAWN_TIME);
-            } else {
-                if (state.enemiesAlive === 0) endGame(true);
-                else showMessage(`${state.enemiesAlive + 1} LEFT`, 1000);
-            }
-        }
-
-        function takePlayerDamage(amount) {
-            state.playerHP -= amount;
-            updateHPUI();
-            ui.damageOverlay.style.opacity = 0.8;
-            setTimeout(() => { ui.damageOverlay.style.opacity = 0; }, 300);
-            if (state.playerHP <= 0) endGame(false);
-        }
-        function updateHPUI() {
-            const pct = Math.max(0, state.playerHP);
-            ui.hpBar.style.width = `${pct}%`;
-            ui.hpText.innerText = `${Math.floor(pct)} / 100`;
-            ui.hpBar.style.backgroundColor = pct <= 30 ? '#ff0055' : '#00ffea';
-        }
-        function updateScoreUI() { ui.score.innerText = state.mode === 'practice' ? state.enemiesAlive : (state.enemiesAlive + 1); }
-        function showMessage(text, duration) { ui.msg.innerText = text; ui.msg.style.opacity = 1; setTimeout(() => { ui.msg.style.opacity = 0; }, duration); }
-        function showDamagePopup(pos, amount) {
-            const div = document.createElement('div');
-            div.className = 'damage-number';
-            div.innerText = `-${amount}`;
-            document.body.appendChild(div);
-            damagePopups.push({ element: div, worldPos: pos.clone().add(new THREE.Vector3(0, 10, 0)), life: 1.0 });
-        }
-        function updateDamagePopups(delta) {
-            for (let i = damagePopups.length - 1; i >= 0; i--) {
-                const p = damagePopups[i];
-                p.life -= delta;
-                const s = p.worldPos.clone().project(camera);
-                if (s.z < 1 && Math.abs(s.x) < 1 && Math.abs(s.y) < 1 && p.life > 0) {
-                    p.element.style.left = `${(s.x * .5 + .5) * window.innerWidth}px`;
-                    p.element.style.top = `${(-(s.y * .5) + .5) * window.innerHeight}px`;
-                    p.element.style.opacity = p.life;
-                    p.worldPos.y += delta * 5; 
-                } else { p.element.remove(); damagePopups.splice(i, 1); }
-            }
-        }
-        function drawMinimap() {
-            if (!minimapCtx) return;
-            const w = ui.canvasMinimap.width, h = ui.canvasMinimap.height, range = CONFIG.MINIMAP_RANGE;
-            minimapCtx.clearRect(0, 0, w, h);
-            minimapCtx.fillStyle = "#555";
-            for (const b of buildings) {
-                const rx = b.x - camera.position.x, rz = b.z - camera.position.z;
-                if (Math.abs(rx) < range && Math.abs(rz) < range) {
-                    minimapCtx.fillRect(w/2 + (rx/range)*(w/2) - (b.w/range)*(w/2)/2, h/2 + (rz/range)*(h/2) - (b.d/range)*(h/2)/2, (b.w/range)*(w/2), (b.d/range)*(h/2));
-                }
-            }
-            minimapCtx.fillStyle = "#f00";
-            for (const e of enemies) {
-                const rx = e.mesh.position.x - camera.position.x, rz = e.mesh.position.z - camera.position.z;
-                if (Math.abs(rx) < range && Math.abs(rz) < range) {
-                    minimapCtx.beginPath(); minimapCtx.arc(w/2 + (rx/range)*(w/2), h/2 + (rz/range)*(h/2), 3, 0, Math.PI*2); minimapCtx.fill();
-                }
-            }
-            minimapCtx.save(); minimapCtx.translate(w/2, h/2); minimapCtx.rotate(-camera.rotation.y);
-            minimapCtx.fillStyle = "#00f"; minimapCtx.beginPath(); minimapCtx.moveTo(0, -6); minimapCtx.lineTo(5, 6); minimapCtx.lineTo(0, 3); minimapCtx.lineTo(-5, 6); minimapCtx.fill(); minimapCtx.restore();
-        }
-        
-        function createCity() {
-            const ground = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.8 }));
-            ground.rotateX(-Math.PI / 2); ground.receiveShadow = true; scene.add(ground);
-            const grid = new THREE.GridHelper(2000, 50, 0x00ffea, 0x333); grid.position.y = 0.1; scene.add(grid);
-            const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-            const winMat = new THREE.MeshBasicMaterial({ color: 0x00ffea });
-            
-            for(let i=0; i<150; i++) {
-                const w = 20 + Math.random() * 30, h = 40 + Math.random() * 120, d = 20 + Math.random() * 30;
-                const x = (Math.random()-0.5)*900, z = (Math.random()-0.5)*900;
-                if (Math.abs(x)<50 && Math.abs(z)<50) continue;
-                const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0, 0, 0.1 + Math.random()*0.2), roughness: 0.2 });
-                const b = new THREE.Mesh(boxGeo, mat);
-                b.position.set(x, h/2, z); b.scale.set(w, h, d); b.castShadow = true; b.receiveShadow = true;
-                scene.add(b); 
-                buildings.push({x, z, w, d, h}); 
-                buildingMeshes.push(b);
-                if (Math.random() > 0.3) {
-                    const win = new THREE.Mesh(new THREE.PlaneGeometry(w*0.6, h*0.8), winMat);
-                    win.position.copy(b.position);
-                    if (Math.random()>0.5) win.position.z += d/2 + 0.1; else { win.rotation.y=Math.PI/2; win.position.x+=w/2+0.1; }
-                    scene.add(win);
-                }
-            }
+        // --- その他の関数 ---
+        function createBorder() {
+            const geo = new THREE.CylinderGeometry(1, 1, 500, 32, 1, true);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x0044ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false });
+            borderCylinder = new THREE.Mesh(geo, mat);
+            borderCylinder.position.y = 250; borderCylinder.visible = false; scene.add(borderCylinder);
         }
         function createGun() {
             gunGroup = new THREE.Group();
@@ -1392,39 +949,32 @@
             const scope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.3), mat); scope.rotation.x = Math.PI/2; scope.position.set(0, 0.12, -0.15); gunGroup.add(scope);
             gunGroup.position.set(0.25, -0.25, -0.4); camera.add(gunGroup); scene.add(camera);
         }
-
-        function onKeyDown(e) { 
-            switch(e.code) { 
-                case 'KeyW': input.forward=true; break; 
-                case 'KeyA': input.left=true; break; 
-                case 'KeyS': input.backward=true; break; 
-                case 'KeyD': input.right=true; break; 
-                case 'Space': if(input.canJump){velocity.y+=250; input.canJump=false;} break; 
-                case 'ShiftLeft': input.sprint=true; break; 
-                case 'Escape': if(state.isActive && state.mode==='practice') returnToTitle(); break; 
-            } 
+        function createCity() {
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.8 }));
+            ground.rotateX(-Math.PI / 2); ground.receiveShadow = true; scene.add(ground);
+            const grid = new THREE.GridHelper(2000, 50, 0x00ffea, 0x333); grid.position.y = 0.1; scene.add(grid);
+            const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+            const winMat = new THREE.MeshBasicMaterial({ color: 0x00ffea });
+            for(let i=0; i<150; i++) {
+                const w = 20 + Math.random() * 30, h = 40 + Math.random() * 120, d = 20 + Math.random() * 30;
+                const x = (Math.random()-0.5)*900, z = (Math.random()-0.5)*900;
+                if (Math.abs(x)<50 && Math.abs(z)<50) continue;
+                const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0, 0, 0.1 + Math.random()*0.2), roughness: 0.2 });
+                const b = new THREE.Mesh(boxGeo, mat);
+                b.position.set(x, h/2, z); b.scale.set(w, h, d); b.castShadow = true; b.receiveShadow = true;
+                scene.add(b); buildings.push({x, z, w, d, h}); buildingMeshes.push(b);
+                if (Math.random() > 0.3) {
+                    const win = new THREE.Mesh(new THREE.PlaneGeometry(w*0.6, h*0.8), winMat);
+                    win.position.copy(b.position);
+                    if (Math.random()>0.5) win.position.z += d/2 + 0.1; else { win.rotation.y=Math.PI/2; win.position.x+=w/2+0.1; }
+                    scene.add(win);
+                }
+            }
         }
-        function onKeyUp(e) { 
-            switch(e.code) { 
-                case 'KeyW': input.forward=false; break; 
-                case 'KeyA': input.left=false; break; 
-                case 'KeyS': input.backward=false; break; 
-                case 'KeyD': input.right=false; break; 
-                case 'ShiftLeft': input.sprint=false; break; 
-            } 
-        }
-        
-        function onMouseMove(e) { 
-            if (document.pointerLockElement===document.body && state.isActive) { 
-                const sens = input.zoom ? 0.0004 : 0.002; 
-                const mX = Math.min(Math.max(e.movementX, -50), 50);
-                const mY = Math.min(Math.max(e.movementY, -50), 50);
-                camera.rotation.y -= mX * sens; 
-                camera.rotation.x -= mY * sens; 
-                camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x)); 
-            } 
-        }
-        function onMouseDown(e) { if(!state.isActive)return; if(state.deviceType === 'PC' && document.pointerLockElement!==document.body){document.body.requestPointerLock();return;} if(e.button===0)shoot(null,true); if(e.button===2)setZoom(true); }
+        function onKeyDown(e) { switch(e.code) { case 'KeyW': input.forward=true; break; case 'KeyA': input.left=true; break; case 'KeyS': input.backward=true; break; case 'KeyD': input.right=true; break; case 'Space': if(input.canJump){velocity.y+=250; input.canJump=false;} break; case 'ShiftLeft': input.sprint=true; break; case 'Escape': if(state.isActive && state.mode==='practice') returnToTitle(); break; } }
+        function onKeyUp(e) { switch(e.code) { case 'KeyW': input.forward=false; break; case 'KeyA': input.left=false; break; case 'KeyS': input.backward=false; break; case 'KeyD': input.right=false; break; case 'ShiftLeft': input.sprint=false; break; } }
+        function onMouseMove(e) { if(document.pointerLockElement===document.body && state.isActive) { const s=input.zoom?0.0004:0.002; const mX=Math.min(Math.max(e.movementX,-50),50); const mY=Math.min(Math.max(e.movementY,-50),50); camera.rotation.y-=mX*s; camera.rotation.x-=mY*s; camera.rotation.x=Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x)); } }
+        function onMouseDown(e) { if(!state.isActive)return; if(state.deviceType==='PC' && document.pointerLockElement!==document.body){document.body.requestPointerLock();return;} if(e.button===0)shoot(null,true); if(e.button===2)setZoom(true); }
         function onMouseUp(e) { if(e.button===2)setZoom(false); }
         function onWindowResize() { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
     </script>
